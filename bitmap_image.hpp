@@ -434,7 +434,8 @@ public:
 
       if (!stream)
       {
-         std::cerr << "bitmap_image::save_image(): Error - Could not open file "  << file_name << " for writing!" << std::endl;
+         std::cerr << "bitmap_image::save_image(): Error - Could not open file "
+                   << file_name << " for writing!" << std::endl;
          return;
       }
 
@@ -1511,7 +1512,8 @@ private:
 
       if (!stream)
       {
-         std::cerr << "bitmap_image::load_bitmap() ERROR: bitmap_image - file " << file_name_ << " not found!" << std::endl;
+         std::cerr << "bitmap_image::load_bitmap() ERROR: bitmap_image - "
+                   << "file " << file_name_ << " not found!" << std::endl;
          return;
       }
 
@@ -1529,35 +1531,40 @@ private:
 
       if (bfh.type != 19778)
       {
+         std::cerr << "bitmap_image::load_bitmap() ERROR: bitmap_image - "
+                   << "Invalid type value " << bfh.type << " expected 19778." << std::endl;
+
          bfh.clear();
          bih.clear();
 
          stream.close();
 
-         std::cerr << "bitmap_image::load_bitmap() ERROR: bitmap_image - Invalid type value " << bfh.type << " expected 19778." << std::endl;
          return;
       }
 
       if (bih.bit_count != 24)
       {
+         std::cerr << "bitmap_image::load_bitmap() ERROR: bitmap_image - "
+                   << "Invalid bit depth " << bih.bit_count << " expected 24." << std::endl;
+
          bfh.clear();
          bih.clear();
 
          stream.close();
-
-         std::cerr << "bitmap_image::load_bitmap() ERROR: bitmap_image - Invalid bit depth " << bih.bit_count << " expected 24." << std::endl;
 
          return;
       }
 
       if (bih.size != bih.struct_size())
       {
+         std::cerr << "bitmap_image::load_bitmap() ERROR: bitmap_image - "
+                   << "Invalid BIH size " << bih.size
+                   << " expected " << bih.struct_size() << std::endl;
+
          bfh.clear();
          bih.clear();
 
          stream.close();
-
-         std::cerr << "bitmap_image::load_bitmap() ERROR: bitmap_image - Invalid BIH size " << bih.size << " expected " << bih.struct_size() << std::endl;
 
          return;
       }
@@ -1568,7 +1575,7 @@ private:
       bytes_per_pixel_ = bih.bit_count >> 3;
 
       unsigned int padding = (4 - ((3 * width_) % 4)) % 4;
-      char padding_data[4] = {0,0,0,0};
+      char padding_data[4] = { 0x00, 0x00, 0x00, 0x00 };
 
       std::size_t bitmap_file_size = file_size(file_name_);
 
@@ -1579,14 +1586,15 @@ private:
 
       if (bitmap_file_size != bitmap_logical_size)
       {
+         std::cerr << "bitmap_image::load_bitmap() ERROR: bitmap_image - "
+                   << "Mismatch between logical and physical sizes of bitmap. "
+                   << "Logical: "  << bitmap_logical_size << " "
+                   << "Physical: " << bitmap_file_size    << std::endl;
+
          bfh.clear();
          bih.clear();
 
          stream.close();
-
-         std::cerr << "bitmap_image::load_bitmap() ERROR: bitmap_image - Mismatch between logical and physical sizes of bitmap. " <<
-                      "Logical: "  << bitmap_logical_size << " " <<
-                      "Physical: " << bitmap_file_size    << std::endl;
 
          return;
       }
